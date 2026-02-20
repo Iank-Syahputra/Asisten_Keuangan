@@ -1,8 +1,6 @@
-[![CodeGuide](/codeguide-backdrop.svg)](https://codeguide.dev)
+# Asisten Keuangan
 
-# CodeGuide Starter Kit
-
-A modern web application starter template built with Next.js 15, featuring authentication, database integration, AI capabilities, and dark mode support.
+A modern financial management application built with Next.js 15, featuring authentication, database integration, AI-powered financial assistance, and dark mode support.
 
 ## Tech Stack
 
@@ -22,14 +20,13 @@ Before you begin, ensure you have the following:
 - A [Clerk](https://clerk.com/) account for authentication
 - A [Supabase](https://supabase.com/) account for database
 - Optional: [OpenAI](https://platform.openai.com/) or [Anthropic](https://console.anthropic.com/) API key for AI features
-- Generated project documents from [CodeGuide](https://codeguide.dev/) for best development experience
 
 ## Getting Started
 
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd codeguide-starter-kit
+   cd asisten-keuangan
    ```
 
 2. **Install dependencies**
@@ -104,7 +101,7 @@ ANTHROPIC_API_KEY=your_anthropic_api_key
 
 - 🔐 Authentication with Clerk (middleware protection)
 - 🗄️ Supabase Database with third-party auth integration
-- 🤖 AI Chat Interface with OpenAI/Anthropic support
+- 🤖 AI Chat Interface for financial assistance
 - 🎨 40+ shadcn/ui components (New York style)
 - 🌙 Dark mode with system preference detection
 - 🎯 Built-in setup dashboard with service status
@@ -112,17 +109,18 @@ ANTHROPIC_API_KEY=your_anthropic_api_key
 - 🔒 Row Level Security examples with Clerk user IDs
 - 📱 Responsive design with TailwindCSS v4
 - 🎨 Custom fonts (Geist Sans, Geist Mono, Parkinsans)
+- 💰 Financial management tools (expense tracking, analysis, budgeting)
 
 ## Project Structure
 
 ```
-codeguide-starter-kit/
+asisten-keuangan/
 ├── src/
 │   ├── app/                    # Next.js app router pages
 │   │   ├── api/chat/          # AI chat API endpoint
 │   │   ├── globals.css        # Global styles with dark mode
 │   │   ├── layout.tsx         # Root layout with providers
-│   │   └── page.tsx           # Hero + setup dashboard
+│   │   └── page.tsx           # Home page with financial dashboard
 │   ├── components/            # React components
 │   │   ├── ui/                # shadcn/ui components (40+)
 │   │   ├── chat.tsx           # AI chat interface
@@ -143,7 +141,7 @@ codeguide-starter-kit/
 
 ## Database Integration
 
-This starter includes modern Clerk + Supabase integration:
+This application includes modern Clerk + Supabase integration:
 
 - **Third-party auth** (not deprecated JWT templates)
 - **Row Level Security** policies using `auth.jwt() ->> 'sub'` for Clerk user IDs
@@ -152,34 +150,13 @@ This starter includes modern Clerk + Supabase integration:
 
 ## AI Coding Agent Integration
 
-This starter is optimized for AI coding agents:
+This project is optimized for AI coding agents:
 
 - **`CLAUDE.md`** - Comprehensive project context and patterns
 - **Setup guides** with detailed integration steps
 - **Example migrations** with RLS policy templates
 - **Clear file structure** and naming conventions
 - **TypeScript integration** with proper type definitions
-
-## Documentation Setup
-
-To implement the generated documentation from CodeGuide:
-
-1. Create a `documentation` folder in the root directory:
-   ```bash
-   mkdir documentation
-   ```
-
-2. Place all generated markdown files from CodeGuide in this directory:
-   ```bash
-   # Example structure
-   documentation/
-   ├── project_requirements_document.md             
-   ├── app_flow_document.md
-   ├── frontend_guideline_document.md
-   └── backend_structure_document.md
-   ```
-
-3. These documentation files will be automatically tracked by git and can be used as a reference for your project's features and implementation details.
 
 ## Contributing
 

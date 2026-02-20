@@ -1,6 +1,6 @@
-# Contributing to CodeGuide Starter Kit
+# Contributing to Asisten Keuangan
 
-We welcome contributions to the CodeGuide Starter Kit! This document provides guidelines for contributing to the project.
+We welcome contributions to the Asisten Keuangan project! This document provides guidelines for contributing to the project.
 
 ## Getting Started
 
@@ -172,4 +172,4 @@ CREATE POLICY "Users can manage own records" ON example_table
 - Ask questions in pull request discussions
 - Reach out to maintainers for guidance
 
-Thank you for contributing to CodeGuide Starter Kit!
+Thank you for contributing to Asisten Keuangan!

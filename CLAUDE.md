@@ -1,10 +1,10 @@
-# CLAUDE.md - CodeGuide Starter Kit
+# CLAUDE.md - Asisten Keuangan
 
-This file contains essential context about the project structure, technologies, and conventions to help Claude understand and work effectively within this codebase.
+This file contains essential context about the project structure, technologies, and conventions to help AI assistants understand and work effectively within this codebase.
 
 ## Project Overview
 
-**CodeGuide Starter Kit** is a modern Next.js starter template featuring authentication, database integration, AI capabilities, and a comprehensive UI component system.
+**Asisten Keuangan** is a modern financial management application built with Next.js 15, featuring authentication, database integration, AI-powered financial assistance, and a comprehensive UI component system.
 
 ### Core Technologies
 
@@ -26,7 +26,7 @@ src/
 │   │   └── chat/          # AI chat endpoint
 │   ├── globals.css        # Global styles with dark mode
 │   ├── layout.tsx         # Root layout with providers
-│   └── page.tsx           # Home page with status dashboard
+│   └── page.tsx           # Home page with financial dashboard
 ├── components/
 │   ├── ui/                # shadcn/ui components (40+ components)
 │   ├── chat.tsx           # AI chat interface

@@ -1,161 +1,178 @@
 "use client";
 
-import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
-import Chat from "@/components/chat";
+import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import {
-  CheckCircle,
-  Zap,
-  Database,
+  Wallet,
+  TrendingUp,
+  PiggyBank,
   Shield,
-  ExternalLink,
+  ArrowRight,
+  Sparkles,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
-import Image from "next/image";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function Home() {
+  const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      {/* Hero Section */}
-      <div className="text-center py-12 sm:py-16 relative px-4">
-        <div className="absolute top-4 right-4 sm:top-6 sm:right-6">
-          <div className="flex items-center gap-2 sm:gap-3">
+    <div className="min-h-screen flex flex-col bg-gray-950 text-white">
+      {/* Ambient BG */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-600/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-teal-600/10 rounded-full blur-3xl" />
+      </div>
+
+      {/* NAV */}
+      <nav className="relative z-50 w-full border-b border-white/5 backdrop-blur-sm bg-gray-950/80 sticky top-0">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="bg-gradient-to-br from-emerald-400 to-teal-600 p-2 rounded-xl shadow-lg shadow-emerald-900/40">
+              <Wallet className="w-4 h-4 text-white" />
+            </div>
+            <span className="font-bold text-sm tracking-tight">
+              Asisten <span className="text-emerald-400">Keuangan</span>
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
             <ThemeToggle />
             <SignedOut>
-              <SignInButton>
-                <Button size="sm" className="text-xs sm:text-sm">
-                  Sign In
+              <Link href="/sign-in">
+                <Button size="sm" variant="ghost" className="text-gray-300 hover:text-white hover:bg-white/5 text-sm">
+                  Masuk
                 </Button>
-              </SignInButton>
+              </Link>
             </SignedOut>
             <SignedIn>
-              <UserButton />
+              <div className="flex items-center gap-2">
+                <Button size="sm" onClick={() => router.push("/dashboard")} className="bg-emerald-600 hover:bg-emerald-500 text-white text-sm">
+                  Dashboard
+                </Button>
+                <UserButton />
+              </div>
             </SignedIn>
           </div>
         </div>
+      </nav>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-4">
-          <Image
-            src="/codeguide-logo.png"
-            alt="CodeGuide Logo"
-            width={50}
-            height={50}
-            className="rounded-xl sm:w-[60px] sm:h-[60px]"
-          />
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 bg-clip-text text-transparent">
-            CodeGuide Starter
+      {/* MAIN */}
+      <main className="relative z-10 flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6">
+
+        {/* HERO */}
+        <section className="py-4 sm:py-10 flex flex-col items-center text-center">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-1.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium px-3 py-1.5 rounded-full mb-6">
+            <Sparkles className="w-3 h-3" />
+            Asisten Keuangan Berbasis AI
+          </div>
+
+          {/* Headline */}
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight text-white mb-5">
+            Kelola{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400">
+              Keuangan
+            </span>
+            <br />
+            Lebih Bijak
           </h1>
-        </div>
-        <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto px-4">
-          Build faster with your AI coding agent
-        </p>
-      </div>
 
-      <main className="container mx-auto px-4 sm:px-6 pb-12 sm:pb-8 max-w-5xl">
-        <div className="text-center mb-8">
-          <div className="text-4xl sm:text-5xl mb-2">⚠️</div>
-          <div className="font-bold text-lg sm:text-xl mb-1">Setup Required</div>
-          <div className="text-sm sm:text-base text-muted-foreground">
-            Add environment variables to get started
-          </div>
-        </div>
+          {/* Desc */}
+          <p className="text-sm sm:text-base text-gray-400 leading-relaxed mb-9 max-w-md">
+            Catat pengeluaran, analisis keuangan, dan raih tujuan finansial Anda
+            dengan bantuan AI yang cerdas dan mudah digunakan.
+          </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-          {/* Clerk */}
-          <div className="text-center p-3 sm:p-4 rounded-lg bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10">
-            <div className="flex justify-center mb-3">
-              <Shield className="w-6 h-6 sm:w-8 sm:h-8 text-blue-500" />
-            </div>
-            <div className="font-semibold mb-2 text-sm sm:text-base">
-              Clerk Auth
-            </div>
-            <div className="text-xs text-muted-foreground mb-2">
-              <div className="font-mono bg-blue-100 dark:bg-blue-800 px-2 py-1 rounded mb-1">NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY</div>
-              <div className="font-mono bg-blue-100 dark:bg-blue-800 px-2 py-1 rounded">CLERK_SECRET_KEY</div>
-            </div>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() =>
-                window.open("https://dashboard.clerk.com", "_blank")
-              }
-              className="w-full text-xs sm:text-sm"
-            >
-              <ExternalLink className="w-3 h-3 mr-1" />
-              Dashboard
-            </Button>
-          </div>
-
-          {/* Supabase */}
-          <div className="text-center p-3 sm:p-4 rounded-lg bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/10 dark:to-emerald-900/10">
-            <div className="flex justify-center mb-3">
-              <Database className="w-6 h-6 sm:w-8 sm:h-8 text-green-500" />
-            </div>
-            <div className="font-semibold mb-2 text-sm sm:text-base">
-              Supabase DB
-            </div>
-            <div className="text-xs text-muted-foreground mb-2">
-              <div className="font-mono bg-green-100 dark:bg-green-800 px-2 py-1 rounded mb-1">NEXT_PUBLIC_SUPABASE_URL</div>
-              <div className="font-mono bg-green-100 dark:bg-green-800 px-2 py-1 rounded">NEXT_PUBLIC_SUPABASE_ANON_KEY</div>
-            </div>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() =>
-                window.open("https://supabase.com/dashboard", "_blank")
-              }
-              className="w-full text-xs sm:text-sm"
-            >
-              <ExternalLink className="w-3 h-3 mr-1" />
-              Dashboard
-            </Button>
-          </div>
-
-          {/* AI */}
-          <div className="text-center p-3 sm:p-4 rounded-lg bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/10 dark:to-pink-900/10 sm:col-span-2 md:col-span-1">
-            <div className="flex justify-center mb-3">
-              <Zap className="w-6 h-6 sm:w-8 sm:h-8 text-purple-500" />
-            </div>
-            <div className="font-semibold mb-2 text-sm sm:text-base">
-              AI SDK
-            </div>
-            <div className="text-xs text-muted-foreground mb-2">
-              <div className="font-mono bg-purple-100 dark:bg-purple-800 px-2 py-1 rounded mb-1">OPENAI_API_KEY</div>
-              <div className="font-mono bg-purple-100 dark:bg-purple-800 px-2 py-1 rounded">ANTHROPIC_API_KEY</div>
-            </div>
-            <div className="grid grid-cols-2 gap-1 sm:gap-2">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() =>
-                  window.open("https://platform.openai.com", "_blank")
-                }
-                className="text-xs px-1 sm:px-2"
-              >
-                OpenAI
+          {/* CTA */}
+          <SignedOut>
+            <Link href="/sign-in">
+              <Button className="bg-emerald-600 hover:bg-emerald-500 text-white h-12 px-8 text-sm rounded-xl font-semibold shadow-lg shadow-emerald-900/40 transition-all hover:scale-[1.02]">
+                Mulai Sekarang
+                <ArrowRight className="ml-2 w-4 h-4" />
               </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() =>
-                  window.open("https://console.anthropic.com", "_blank")
-                }
-                className="text-xs px-1 sm:px-2"
-              >
-                Anthropic
-              </Button>
-            </div>
-          </div>
-        </div>
+            </Link>
+          </SignedOut>
+          <SignedIn>
+            <Button
+              onClick={() => router.push("/dashboard")}
+              className="bg-emerald-600 hover:bg-emerald-500 text-white h-12 px-8 text-sm rounded-xl font-semibold shadow-lg shadow-emerald-900/40 transition-all hover:scale-[1.02]"
+            >
+              Buka Dashboard
+              <ArrowRight className="ml-2 w-4 h-4" />
+            </Button>
+          </SignedIn>
+        </section>
 
-        {/* Chat Section */}
-        <SignedIn>
-          <div className="mt-6 sm:mt-8">
-            <Chat />
+        {/* FEATURES */}
+        <section className="py-6 border-t border-white/10">
+          <div className="text-center mb-8">
+            <p className="text-[11px] font-semibold uppercase tracking-widest text-emerald-400 mb-2">Fitur Utama</p>
+            <h2 className="text-xl sm:text-2xl font-bold text-white">Semua yang Anda butuhkan</h2>
           </div>
-        </SignedIn>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {[
+              {
+                icon: <PiggyBank className="w-5 h-5" />,
+                title: "Catat Pengeluaran",
+                desc: "Pantau setiap transaksi harian dengan kategori otomatis yang cerdas.",
+                colorClass: "bg-emerald-500/10 border-emerald-500/20 text-emerald-400",
+              },
+              {
+                icon: <TrendingUp className="w-5 h-5" />,
+                title: "Analisis Keuangan",
+                desc: "Laporan visual dan insight mendalam untuk memahami pola pengeluaran Anda.",
+                colorClass: "bg-teal-500/10 border-teal-500/20 text-teal-400",
+              },
+              {
+                icon: <Shield className="w-5 h-5" />,
+                title: "Aman & Privat",
+                desc: "Data Anda terlindungi dengan enkripsi tingkat tinggi dan privasi penuh.",
+                colorClass: "bg-cyan-500/10 border-cyan-500/20 text-cyan-400",
+              },
+            ].map((f, i) => (
+              <div
+                key={i}
+                className="bg-gray-900 border border-white/5 rounded-2xl p-5 hover:border-emerald-500/30 transition-all duration-200 hover:-translate-y-0.5 flex flex-col items-center text-center"
+              >
+                <div className={`w-9 h-9 rounded-xl border flex items-center justify-center mb-4 ${f.colorClass}`}>
+                  {f.icon}
+                </div>
+                <h3 className="text-sm font-bold text-white mb-1.5">{f.title}</h3>
+                <p className="text-xs text-gray-500 leading-relaxed">{f.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
       </main>
+
+      {/* FOOTER */}
+      <footer className="relative z-10 w-full border-t border-white/5 bg-gray-950 mt-auto">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <div className="bg-gradient-to-br from-emerald-400 to-teal-600 p-1.5 rounded-lg">
+                <Wallet className="w-3.5 h-3.5 text-white" />
+              </div>
+              <span className="text-sm font-bold">
+                Asisten <span className="text-emerald-400">Keuangan</span>
+              </span>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-gray-500">
+              {["Privasi", "Syarat", "Bantuan"].map((link) => (
+                <a key={link} href="#" className="hover:text-emerald-400 transition-colors">
+                  {link}
+                </a>
+              ))}
+            </div>
+
+            <p className="text-[11px] text-gray-600">© 2026 Asisten Keuangan</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

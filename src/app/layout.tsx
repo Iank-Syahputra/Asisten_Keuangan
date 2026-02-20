@@ -23,9 +23,40 @@ const parkinsans = Parkinsans({
 });
 
 export const metadata: Metadata = {
-  title: "CodeGuide Starter Kit",
+  title: "Asisten Keuangan - Kelola Keuangan Pribadi dengan AI",
   description:
-    "A modern Next.js starter with TypeScript, TailwindCSS, shadcn/ui, Vercel AI SDK, Clerk, and Supabase",
+    "Asisten Keuangan pribadi berbasis AI untuk membantu Anda mengelola pengeluaran, analisis keuangan, dan mencapai kebebasan finansial.",
+};
+
+const clerkAppearance = {
+  variables: {
+    colorPrimary: '#10b981',
+    colorBackground: '#0a0a0a',
+    colorInputBackground: '#171717',
+    colorInputText: '#ffffff',
+    colorText: '#ffffff',
+    colorTextSecondary: '#a3a3a3',
+    colorBorder: '#262626',
+    colorError: '#ef4444',
+  },
+  elements: {
+    formButtonPrimary: 'bg-emerald-600 hover:bg-emerald-500 !important',
+    card: 'bg-gray-950 border border-white/10 !important',
+    headerTitle: 'text-white !important',
+    headerSubtitle: 'text-gray-400 !important',
+    socialButtonsBlockButton: 'bg-gray-900 border border-white/10 text-white hover:bg-gray-800 !important',
+    socialButtonsBlockButtonText: 'text-white !important',
+    formFieldInput: 'bg-gray-900 border border-white/10 text-white placeholder:text-gray-500 !important',
+    footerActionLink: 'text-emerald-400 hover:text-emerald-300 !important',
+    identityPreviewEditButton: 'text-emerald-400 !important',
+    formFieldLabel: 'text-gray-300 !important',
+    dividerLine: 'bg-white/10 !important',
+    dividerText: 'text-gray-500 !important',
+    formFieldErrorText: 'text-red-400 !important',
+    formFieldWarningText: 'text-amber-400 !important',
+    phoneInputButton: 'bg-gray-900 border border-white/10 text-white !important',
+    phoneInputCountryText: 'text-white !important',
+  },
 };
 
 export default function RootLayout({
@@ -34,7 +65,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider appearance={{ ...clerkAppearance }}>
       <html lang="en" suppressHydrationWarning>
         <body
           className={`${geistSans.className} ${geistMono.className} ${parkinsans.className} antialiased`}

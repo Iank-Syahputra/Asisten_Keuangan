@@ -37,7 +37,6 @@ const clerkAppearance = {
     colorText: '#ffffff',
     colorTextSecondary: '#a3a3a3',
     colorBorder: '#262626',
-    colorError: '#ef4444',
   },
   elements: {
     formButtonPrimary: 'bg-emerald-600 hover:bg-emerald-500 !important',

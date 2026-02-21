@@ -51,10 +51,6 @@ export default function SignInPage() {
               colorText: '#FFFFFF',
               colorTextSecondary: '#9CA3AF',
               colorBorder: '#374151',
-              colorError: '#EF4444',
-              colorSuccess: '#10B981',
-              colorWarning: '#F59E0B',
-              colorAccent: '#00BA88',
             },
             elements: {
               // Card & Container

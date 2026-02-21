@@ -5,9 +5,6 @@ import Chat from "@/components/chat";
 import { Button } from "@/components/ui/button";
 import {
   Wallet,
-  TrendingUp,
-  PiggyBank,
-  CreditCard,
   ChartPie,
   ArrowLeft,
 } from "lucide-react";
@@ -59,39 +56,29 @@ export default function Dashboard() {
       </nav>
 
       {/* MAIN */}
-      <main className="relative z-10 flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 py-8">
-
-        {/* Page Header */}
-        <div className="mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1">Dashboard</h1>
-          <p className="text-sm text-gray-500">Kelola keuangan Anda dengan bantuan AI</p>
-        </div>
-
-        {/* STAT CARDS */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
-          {[
-            { icon: <CreditCard className="w-4 h-4" />, label: "Total Saldo", value: "Rp 0", accent: "emerald" },
-            { icon: <TrendingUp className="w-4 h-4" />, label: "Pemasukan", value: "Rp 0", accent: "teal" },
-            { icon: <PiggyBank className="w-4 h-4" />, label: "Pengeluaran", value: "Rp 0", accent: "red" },
-            { icon: <ChartPie className="w-4 h-4" />, label: "Tabungan", value: "Rp 0", accent: "blue" },
-          ].map((s, i) => (
-            <StatCard key={i} {...s} />
-          ))}
-        </div>
-
-        {/* AI CHAT */}
-        <div className="bg-gray-900 border border-white/5 rounded-2xl overflow-hidden">
+      <main className="relative z-10 flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 py-8 flex flex-col">
+        {/* AI CHAT - Full Page Focus */}
+        <div className="flex-1 bg-gray-900 border border-white/5 rounded-2xl overflow-hidden flex flex-col">
           {/* Chat Header */}
-          <div className="px-5 py-4 border-b border-white/5 flex items-center gap-3">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-              <span className="text-sm font-semibold text-white">Asisten AI Keuangan</span>
+          <div className="px-5 py-4 border-b border-white/5 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                <span className="text-sm font-semibold text-white">Asisten AI Keuangan</span>
+              </div>
             </div>
-            <span className="text-xs text-gray-500 ml-auto">Tanyakan apapun seputar keuangan Anda</span>
+            <Button
+              onClick={() => router.push("/dashboard/overview")}
+              className="bg-emerald-600 hover:bg-emerald-500 text-white text-sm h-9 px-4 rounded-xl font-medium gap-2"
+            >
+              <ChartPie className="w-4 h-4" />
+              <span className="hidden sm:inline">Lihat Dashboard</span>
+              <span className="sm:hidden">Dashboard</span>
+            </Button>
           </div>
 
-          {/* Chat body */}
-          <div className="p-4">
+          {/* Chat body - takes remaining space */}
+          <div className="flex-1 p-4 min-h-[60vh]">
             <SignedIn>
               <Chat />
             </SignedIn>
@@ -125,37 +112,6 @@ export default function Dashboard() {
           <p className="text-[11px] text-gray-600">© 2026 Asisten Keuangan. Semua hak dilindungi.</p>
         </div>
       </footer>
-    </div>
-  );
-}
-
-function StatCard({
-  icon,
-  label,
-  value,
-  accent,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  accent: string;
-}) {
-  const accentMap: Record<string, string> = {
-    emerald: "bg-emerald-500/10 border-emerald-500/20 text-emerald-400",
-    teal:    "bg-teal-500/10 border-teal-500/20 text-teal-400",
-    red:     "bg-red-500/10 border-red-500/20 text-red-400",
-    blue:    "bg-blue-500/10 border-blue-500/20 text-blue-400",
-  };
-
-  return (
-    <div className="bg-gray-900 border border-white/5 rounded-2xl p-4 flex flex-col gap-3">
-      <div className={`w-8 h-8 rounded-xl border flex items-center justify-center ${accentMap[accent]}`}>
-        {icon}
-      </div>
-      <div>
-        <p className="text-[11px] text-gray-500 mb-0.5">{label}</p>
-        <p className="text-base font-bold text-white">{value}</p>
-      </div>
     </div>
   );
 } 

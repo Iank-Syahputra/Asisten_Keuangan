@@ -12,10 +12,13 @@ import {
   Calendar,
   RefreshCcw,
   AlertCircle,
+  Trash2,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useCallback } from "react";
+import { toast } from "sonner";
+import { TransactionDeleteDialog } from "@/components/transaction-delete-dialog";
 import {
   LineChart,
   Line,
@@ -71,6 +74,12 @@ export default function DashboardOverview() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Delete transaction states
+  const [transactionToDelete, setTransactionToDelete] = useState<DashboardData["recentTransactions"][0] | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deletedTransaction, setDeletedTransaction] = useState<typeof transactionToDelete | null>(null);
+  const [undoTimeout, setUndoTimeout] = useState<ReturnType<typeof setTimeout> | null>(null);
 
   const fetchDashboardData = useCallback(async () => {
     setLoading(true);
@@ -78,13 +87,13 @@ export default function DashboardOverview() {
     try {
       const response = await fetch(`/api/dashboard?timeRange=${timeRange}`);
       const result = await response.json();
-      
+
       console.log("Dashboard API Response:", result);
 
       if (!response.ok) {
         throw new Error(result.message || result.error || "Gagal mengambil data dashboard");
       }
-      
+
       setData(result);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Terjadi kesalahan";
@@ -94,6 +103,129 @@ export default function DashboardOverview() {
       setLoading(false);
     }
   }, [timeRange]);
+
+  const handleDeleteTransaction = useCallback(async (transactionId: string) => {
+    setIsDeleting(true);
+    try {
+      const response = await fetch(`/api/transactions/${transactionId}`, {
+        method: "DELETE",
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Gagal menghapus transaksi");
+      }
+
+      // Remove transaction from UI (optimistic update already done)
+      toast.success("Transaksi berhasil dihapus", {
+        description: "Data telah dihapus dari dashboard",
+      });
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Terjadi kesalahan";
+      toast.error("Gagal menghapus transaksi", {
+        description: errorMessage,
+      });
+      // Rollback: restore the transaction
+      if (deletedTransaction) {
+        setData((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            recentTransactions: [
+              deletedTransaction,
+              ...prev.recentTransactions.filter((t) => t.id !== deletedTransaction.id),
+            ].slice(0, 10),
+          };
+        });
+      }
+    } finally {
+      setIsDeleting(false);
+      setTransactionToDelete(null);
+    }
+  }, [deletedTransaction]);
+
+  const initiateDelete = useCallback((transaction: typeof transactionToDelete) => {
+    setTransactionToDelete(transaction);
+  }, []);
+
+  const confirmDelete = useCallback(async () => {
+    if (!transactionToDelete) return;
+
+    // Optimistic update: remove from UI immediately
+    setDeletedTransaction(transactionToDelete);
+    setData((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        recentTransactions: prev.recentTransactions.filter((t) => t.id !== transactionToDelete.id),
+      };
+    });
+
+    // Show toast with undo option
+    const toastId = toast.loading("Menghapus transaksi...", {
+      description: "Klik undo untuk membatalkan",
+    });
+
+    // Auto-delete after 5 seconds if no undo
+    const timeout = setTimeout(() => {
+      if (transactionToDelete) {
+        handleDeleteTransaction(transactionToDelete.id);
+        toast.dismiss(toastId);
+      }
+    }, 5000);
+
+    setUndoTimeout(timeout);
+
+    // Store the toast ID and timeout for undo
+    const win = window as Window & { __deleteToastId?: string | number; __deleteTimeout?: ReturnType<typeof setTimeout> };
+    win.__deleteToastId = toastId;
+    win.__deleteTimeout = timeout;
+  }, [transactionToDelete, handleDeleteTransaction]);
+
+  const handleUndoDelete = useCallback(() => {
+    if (undoTimeout) {
+      clearTimeout(undoTimeout);
+      setUndoTimeout(null);
+    }
+
+    const win = window as Window & { __deleteToastId?: string | number | null; __deleteTimeout?: ReturnType<typeof setTimeout> | null };
+    const toastId = win.__deleteToastId;
+    const timeout = win.__deleteTimeout;
+
+    if (timeout) {
+      clearTimeout(timeout);
+      win.__deleteTimeout = null;
+    }
+
+    if (toastId) {
+      toast.dismiss(toastId);
+      win.__deleteToastId = null;
+    }
+
+    // Restore the transaction
+    if (deletedTransaction) {
+      setData((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          recentTransactions: [
+            deletedTransaction,
+            ...prev.recentTransactions.filter((t) => t.id !== deletedTransaction.id),
+          ].slice(0, 10),
+        };
+      });
+
+      toast.success("Penghapusan dibatalkan", {
+        description: "Transaksi telah dipulihkan",
+        duration: 3000,
+      });
+
+      setDeletedTransaction(null);
+    }
+
+    setTransactionToDelete(null);
+  }, [deletedTransaction, undoTimeout]);
 
   useEffect(() => {
     fetchDashboardData();
@@ -441,7 +573,12 @@ export default function DashboardOverview() {
                 <CardHeader>
                   <CardTitle className="text-lg font-semibold text-white flex items-center justify-between">
                     <span>Transaksi Terakhir</span>
-                    <Button variant="ghost" size="sm" className="text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => router.push("/dashboard/transactions")}
+                      className="text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10"
+                    >
                       Lihat Semua
                     </Button>
                   </CardTitle>
@@ -451,9 +588,9 @@ export default function DashboardOverview() {
                     {data.recentTransactions.slice(0, 6).map((transaction) => (
                       <div
                         key={transaction.id}
-                        className="flex items-center justify-between p-3 rounded-xl bg-gray-800/50 hover:bg-gray-800 transition-colors"
+                        className="flex items-center justify-between p-3 rounded-xl bg-gray-800/50 hover:bg-gray-800 transition-colors group"
                       >
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3 flex-1">
                           <div
                             className={`w-10 h-10 rounded-xl flex items-center justify-center ${
                               transaction.type === "income"
@@ -472,16 +609,47 @@ export default function DashboardOverview() {
                             <p className="text-xs text-gray-500">{transaction.category} • {transaction.date}</p>
                           </div>
                         </div>
-                        <span
-                          className={`text-sm font-semibold ${
-                            transaction.type === "income" ? "text-emerald-400" : "text-red-400"
-                          }`}
-                        >
-                          {transaction.type === "income" ? "+" : "-"}{formatCurrency(transaction.amount)}
-                        </span>
+                        <div className="flex items-center gap-3">
+                          <span
+                            className={`text-sm font-semibold ${
+                              transaction.type === "income" ? "text-emerald-400" : "text-red-400"
+                            }`}
+                          >
+                            {transaction.type === "income" ? "+" : "-"}{formatCurrency(transaction.amount)}
+                          </span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => initiateDelete(transaction)}
+                            className="opacity-0 group-hover:opacity-100 transition-opacity text-red-400 hover:text-red-300 hover:bg-red-500/10 h-8 w-8 p-0"
+                            title="Hapus transaksi"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
                       </div>
                     ))}
                   </div>
+                  
+                  {/* Undo Toast */}
+                  {deletedTransaction && (
+                    <div className="mt-4 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+                        <span className="text-sm text-emerald-400">
+                          Transaksi dihapus • Klik undo untuk membatalkan
+                        </span>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleUndoDelete}
+                        className="bg-emerald-600 hover:bg-emerald-500 text-white border-0 h-8 px-3 text-xs"
+                      >
+                        Undo
+                      </Button>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </>
@@ -516,6 +684,19 @@ export default function DashboardOverview() {
           <p className="text-[11px] text-gray-600">© 2026 Asisten Keuangan. Semua hak dilindungi.</p>
         </div>
       </footer>
+
+      {/* Delete Confirmation Dialog */}
+      <TransactionDeleteDialog
+        transaction={transactionToDelete}
+        open={!!transactionToDelete}
+        onOpenChange={(open) => {
+          if (!open) {
+            setTransactionToDelete(null);
+          }
+        }}
+        onConfirm={confirmDelete}
+        isLoading={isDeleting}
+      />
     </div>
   );
 }

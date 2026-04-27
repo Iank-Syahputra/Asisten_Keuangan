@@ -186,6 +186,8 @@ export async function GET(request: NextRequest) {
 
     // Category breakdown for expenses
     const categoryData: Record<string, number> = {};
+    
+    // Extended color palette for categories
     const categoryColors: Record<string, string> = {
       "Makanan": "#10b981",
       "Transportasi": "#3b82f6",
@@ -195,7 +197,20 @@ export async function GET(request: NextRequest) {
       "Kesehatan": "#ec4899",
       "Pendidikan": "#06b6d4",
       "Lainnya": "#6b7280",
+      "Gaji": "#10b981",
+      "Freelance": "#14b8a6",
+      "Bonus": "#0ea5e9",
+      "Investasi": "#6366f1",
+      "Tabungan": "#8b5cf6",
     };
+
+    // Color palette for generating colors for unknown categories
+    const colorPalette = [
+      "#10b981", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6",
+      "#ec4899", "#06b6d4", "#6b7280", "#14b8a6", "#0ea5e9",
+      "#6366f1", "#f97316", "#84cc16", "#eab308", "#a855f7",
+      "#d946ef", "#22d3ee", "#4ade80", "#fbbf24", "#fb7185"
+    ];
 
     transactions
       ?.filter((t) => t.type === "expense")
@@ -204,11 +219,26 @@ export async function GET(request: NextRequest) {
         categoryData[category] = (categoryData[category] || 0) + Number(t.amount);
       });
 
-    const categoryBreakdown = Object.entries(categoryData).map(([name, value]) => ({
-      name,
-      value,
-      color: categoryColors[name] || "#6b7280",
-    })).sort((a, b) => b.value - a.value);
+    // Track color index for unknown categories
+    let colorIndex = 0;
+    const usedColors = new Set<string>();
+    
+    const categoryBreakdown = Object.entries(categoryData).map(([name, value]) => {
+      // Check if category has predefined color
+      if (categoryColors[name]) {
+        return { name, value, color: categoryColors[name] };
+      }
+      
+      // Generate color for unknown category
+      let color: string;
+      do {
+        color = colorPalette[colorIndex % colorPalette.length];
+        colorIndex++;
+      } while (usedColors.has(color) && colorIndex < colorPalette.length * 2);
+      
+      usedColors.add(color);
+      return { name, value, color };
+    }).sort((a, b) => b.value - a.value);
 
     // Savings trend (monthly savings)
     const savingsTrend = Object.entries(monthlyData).map(([month, data]) => ({

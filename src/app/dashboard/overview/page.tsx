@@ -13,6 +13,7 @@ import {
   RefreshCcw,
   AlertCircle,
   Trash2,
+  Download,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useRouter } from "next/navigation";
@@ -80,6 +81,9 @@ export default function DashboardOverview() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [deletedTransaction, setDeletedTransaction] = useState<typeof transactionToDelete | null>(null);
   const [undoTimeout, setUndoTimeout] = useState<ReturnType<typeof setTimeout> | null>(null);
+  
+  // Export state
+  const [isExporting, setIsExporting] = useState(false);
 
   const fetchDashboardData = useCallback(async () => {
     setLoading(true);
@@ -101,6 +105,47 @@ export default function DashboardOverview() {
       console.error("Error fetching dashboard data:", err);
     } finally {
       setLoading(false);
+    }
+  }, [timeRange]);
+
+  const handleExport = useCallback(async () => {
+    setIsExporting(true);
+    try {
+      // Export current period data as PDF
+      const params = new URLSearchParams({
+        format: "pdf",
+        timeRange: timeRange,
+      });
+
+      const response = await fetch(`/api/export?${params}`);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Gagal export data");
+      }
+
+      // Get blob and download
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      const today = new Date().toISOString().split("T")[0];
+      link.setAttribute("download", `laporan-keuangan-${today}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+      toast.success("Export berhasil!", {
+        description: "Laporan PDF sedang diunduh",
+      });
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Terjadi kesalahan";
+      toast.error("Gagal export data", {
+        description: errorMessage,
+      });
+    } finally {
+      setIsExporting(false);
     }
   }, [timeRange]);
 
@@ -307,9 +352,19 @@ export default function DashboardOverview() {
                 <SelectItem value="1y">1 Tahun</SelectItem>
               </SelectContent>
             </Select>
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-white/10 hover:bg-white/5 gap-2"
+              onClick={handleExport}
+              disabled={loading || isExporting}
+            >
+              <Download className={`w-4 h-4 ${isExporting ? 'animate-pulse' : ''}`} />
+              <span className="hidden sm:inline">Export</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
               className="border-white/10 hover:bg-white/5"
               onClick={fetchDashboardData}
               disabled={loading}

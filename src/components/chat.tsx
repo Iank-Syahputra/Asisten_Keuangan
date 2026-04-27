@@ -19,7 +19,8 @@ interface Message {
   id: string;
   role: string;
   content: string;
-  transaction?: Transaction | null;
+  transaction?: Transaction | Transaction[] | null;
+  transactionsCount?: number;
 }
 
 export default function Chat() {
@@ -60,11 +61,12 @@ export default function Chat() {
       }
 
       const data = await response.json();
-      const assistantMessage: Message = { 
-        id: (Date.now() + 1).toString(), 
-        role: "assistant", 
+      const assistantMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
         content: data.text,
         transaction: data.transaction?.success ? data.transaction.data : null,
+        transactionsCount: data.transaction?.count || (data.transaction?.success && data.transaction.data ? 1 : 0),
       };
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (err) {
@@ -109,48 +111,98 @@ export default function Chat() {
         ) : (
           messages.map((m) => (
             <div key={m.id} className="space-y-2">
-              {/* Transaction Card */}
-              {m.transaction && (
+              {/* Transaction Cards - Support Multiple */}
+              {m.transaction && m.transactionsCount && m.transactionsCount > 0 && (
                 <Card className="p-4 bg-emerald-500/10 border-emerald-500/20">
                   <div className="flex items-center gap-2 mb-3">
                     <CheckCircle2 className="w-5 h-5 text-emerald-400" />
                     <span className="font-semibold text-emerald-400">
-                      Transaksi Berhasil Dicatat!
+                      {m.transactionsCount > 1 
+                        ? `✅ ${m.transactionsCount} Transaksi Berhasil Dicatat!`
+                        : "Transaksi Berhasil Dicatat!"
+                      }
                     </span>
                   </div>
-                  <div className="grid grid-cols-2 gap-3 text-sm">
-                    <div>
-                      <span className="text-gray-500">Tipe:</span>
-                      <div className="flex items-center gap-2 mt-1">
-                        {m.transaction.type === "income" ? (
-                          <TrendingUp className="w-4 h-4 text-emerald-400" />
-                        ) : (
-                          <TrendingDown className="w-4 h-4 text-red-400" />
-                        )}
-                        <span className={m.transaction.type === "income" ? "text-emerald-400" : "text-red-400"}>
-                          {m.transaction.type === "income" ? "Pemasukan" : "Pengeluaran"}
-                        </span>
+                  
+                  {Array.isArray(m.transaction) ? (
+                    // Multiple transactions
+                    <div className="space-y-3">
+                      {m.transaction.map((t, idx) => (
+                        <div key={t.id || idx} className={`p-3 rounded-lg ${idx > 0 ? 'mt-2 border-t border-white/10 pt-3' : ''}`}>
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xs font-semibold text-emerald-400 bg-emerald-500/20 px-2 py-0.5 rounded">
+                              #{idx + 1}
+                            </span>
+                            <div className="flex items-center gap-2">
+                              {t.type === "income" ? (
+                                <TrendingUp className="w-4 h-4 text-emerald-400" />
+                              ) : (
+                                <TrendingDown className="w-4 h-4 text-red-400" />
+                              )}
+                              <span className={`text-sm font-medium ${t.type === "income" ? "text-emerald-400" : "text-red-400"}`}>
+                                {t.type === "income" ? "Pemasukan" : "Pengeluaran"}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-2 gap-3 text-sm">
+                            <div>
+                              <span className="text-gray-500">Jumlah:</span>
+                              <p className="font-semibold text-white mt-1">
+                                {formatCurrency(t.amount)}
+                              </p>
+                            </div>
+                            <div>
+                              <span className="text-gray-500">Kategori:</span>
+                              <p className="text-white mt-1">{t.category}</p>
+                            </div>
+                            <div className="col-span-2">
+                              <span className="text-gray-500">Deskripsi:</span>
+                              <p className="text-white mt-1">{t.description}</p>
+                            </div>
+                            <div className="col-span-2">
+                              <span className="text-gray-500">Tanggal:</span>
+                              <p className="text-white mt-1">{t.date}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    // Single transaction (backward compatibility)
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div>
+                        <span className="text-gray-500">Tipe:</span>
+                        <div className="flex items-center gap-2 mt-1">
+                          {m.transaction.type === "income" ? (
+                            <TrendingUp className="w-4 h-4 text-emerald-400" />
+                          ) : (
+                            <TrendingDown className="w-4 h-4 text-red-400" />
+                          )}
+                          <span className={m.transaction.type === "income" ? "text-emerald-400" : "text-red-400"}>
+                            {m.transaction.type === "income" ? "Pemasukan" : "Pengeluaran"}
+                          </span>
+                        </div>
+                      </div>
+                      <div>
+                        <span className="text-gray-500">Jumlah:</span>
+                        <p className="font-semibold text-white mt-1">
+                          {formatCurrency(m.transaction.amount)}
+                        </p>
+                      </div>
+                      <div>
+                        <span className="text-gray-500">Kategori:</span>
+                        <p className="text-white mt-1">{m.transaction.category}</p>
+                      </div>
+                      <div>
+                        <span className="text-gray-500">Tanggal:</span>
+                        <p className="text-white mt-1">{m.transaction.date}</p>
+                      </div>
+                      <div className="col-span-2">
+                        <span className="text-gray-500">Deskripsi:</span>
+                        <p className="text-white mt-1">{m.transaction.description}</p>
                       </div>
                     </div>
-                    <div>
-                      <span className="text-gray-500">Jumlah:</span>
-                      <p className="font-semibold text-white mt-1">
-                        {formatCurrency(m.transaction.amount)}
-                      </p>
-                    </div>
-                    <div>
-                      <span className="text-gray-500">Kategori:</span>
-                      <p className="text-white mt-1">{m.transaction.category}</p>
-                    </div>
-                    <div>
-                      <span className="text-gray-500">Tanggal:</span>
-                      <p className="text-white mt-1">{m.transaction.date}</p>
-                    </div>
-                    <div className="col-span-2">
-                      <span className="text-gray-500">Deskripsi:</span>
-                      <p className="text-white mt-1">{m.transaction.description}</p>
-                    </div>
-                  </div>
+                  )}
                 </Card>
               )}
 

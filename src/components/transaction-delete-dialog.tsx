@@ -63,30 +63,32 @@ export function TransactionDeleteDialog({
             </AlertDialogTitle>
           </div>
           <AlertDialogDescription className="text-gray-400">
-            <div className="mb-4">
-              Apakah Anda yakin ingin menghapus transaksi ini? Tindakan ini tidak dapat dibatalkan.
-            </div>
+            <div className="space-y-4">
+              <p>
+                Apakah Anda yakin ingin menghapus transaksi ini? Tindakan ini tidak dapat dibatalkan.
+              </p>
 
-            <div className="bg-gray-800/50 rounded-lg p-4 space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-gray-500 text-sm">Kategori</span>
-                <span className="text-white text-sm font-medium">{transaction.category}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-500 text-sm">Deskripsi</span>
-                <span className="text-white text-sm font-medium">{transaction.description}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-500 text-sm">Tanggal</span>
-                <span className="text-white text-sm font-medium">{transaction.date}</span>
-              </div>
-              <div className="flex justify-between items-center pt-2 border-t border-white/10">
-                <span className="text-gray-500 text-sm">Jumlah</span>
-                <span className={`text-sm font-bold ${
-                  transaction.type === "income" ? "text-emerald-400" : "text-red-400"
-                }`}>
-                  {transaction.type === "income" ? "+" : "-"}{formatCurrency(transaction.amount)}
-                </span>
+              <div className="bg-gray-800/50 rounded-lg p-4 space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500 text-sm">Kategori</span>
+                  <span className="text-white text-sm font-medium">{transaction.category}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500 text-sm">Deskripsi</span>
+                  <span className="text-white text-sm font-medium">{transaction.description}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500 text-sm">Tanggal</span>
+                  <span className="text-white text-sm font-medium">{transaction.date}</span>
+                </div>
+                <div className="flex justify-between items-center pt-2 border-t border-white/10">
+                  <span className="text-gray-500 text-sm">Jumlah</span>
+                  <span className={`text-sm font-bold ${
+                    transaction.type === "income" ? "text-emerald-400" : "text-red-400"
+                  }`}>
+                    {transaction.type === "income" ? "+" : "-"}{formatCurrency(transaction.amount)}
+                  </span>
+                </div>
               </div>
             </div>
           </AlertDialogDescription>

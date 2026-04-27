@@ -4,6 +4,11 @@ import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import Chat from "@/components/chat";
 import { Button } from "@/components/ui/button";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   Wallet,
   ChartPie,
   ArrowLeft,
@@ -67,14 +72,6 @@ export default function Dashboard() {
                 <span className="text-sm font-semibold text-white">Asisten AI Keuangan</span>
               </div>
             </div>
-            <Button
-              onClick={() => router.push("/dashboard/overview")}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white text-sm h-9 px-4 rounded-xl font-medium gap-2"
-            >
-              <ChartPie className="w-4 h-4" />
-              <span className="hidden sm:inline">Lihat Dashboard</span>
-              <span className="sm:hidden">Dashboard</span>
-            </Button>
           </div>
 
           {/* Chat body - takes remaining space */}
@@ -98,6 +95,22 @@ export default function Dashboard() {
             </SignedOut>
           </div>
         </div>
+
+        {/* Floating Action Button (FAB) - Dashboard */}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              onClick={() => router.push("/dashboard/overview")}
+              className="fixed top-20 right-6 w-14 h-14 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-900/40 transition-all hover:scale-110 z-50"
+              size="icon"
+            >
+              <ChartPie className="w-6 h-6" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="left" sideOffset={8}>
+            Lihat Dashboard
+          </TooltipContent>
+        </Tooltip>
       </main>
 
       {/* FOOTER */}

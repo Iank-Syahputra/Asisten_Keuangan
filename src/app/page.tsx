@@ -99,7 +99,7 @@ export default function Home() {
               onClick={() => router.push("/dashboard")}
               className="bg-emerald-600 hover:bg-emerald-500 text-white h-12 px-8 text-sm rounded-xl font-semibold shadow-lg shadow-emerald-900/40 transition-all hover:scale-[1.02]"
             >
-              Buka Dashboard
+              Catat Sekarang
               <ArrowRight className="ml-2 w-4 h-4" />
             </Button>
           </SignedIn>

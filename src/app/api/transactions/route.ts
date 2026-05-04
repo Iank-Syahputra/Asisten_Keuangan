@@ -136,6 +136,46 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
 
+    // --- SAAS: Check Subscription Tier Limits ---
+    const { data: subscription } = await supabase
+      .from("user_subscriptions")
+      .select("tier, valid_until")
+      .eq("user_id", userId)
+      .single();
+
+    let userTier = subscription?.tier || "free";
+    
+    // Check if Pro tier is expired
+    if (userTier === "pro" && subscription?.valid_until) {
+      const validUntil = new Date(subscription.valid_until);
+      if (validUntil < new Date()) {
+        userTier = "free"; // Expired, fallback to free limits
+      }
+    }
+
+    if (userTier === "free") {
+      const startOfMonth = new Date();
+      startOfMonth.setDate(1);
+      startOfMonth.setHours(0, 0, 0, 0);
+
+      const { count, error: countError } = await supabase
+        .from("transactions")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", userId)
+        .gte("created_at", startOfMonth.toISOString());
+
+      if (!countError && count !== null && count >= 50) {
+        return NextResponse.json(
+          { 
+            error: "Limit reached", 
+            details: "Free tier is limited to 50 transactions per month. Please upgrade to Pro." 
+          },
+          { status: 403 }
+        );
+      }
+    }
+    // --- END SAAS LIMITS ---
+
     // Validate required fields
     if (!body.type || !body.amount || !body.category || !body.date) {
       return NextResponse.json(

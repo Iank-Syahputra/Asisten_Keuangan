@@ -30,6 +30,7 @@ import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { TransactionDeleteDialog } from "@/components/transaction-delete-dialog";
 import { TransactionEditDialog } from "@/components/transaction-edit-dialog";
+import { ProUpgradeDialog } from "@/components/pro-upgrade-dialog";
 import {
   Dialog,
   DialogContent,
@@ -117,6 +118,11 @@ export default function TransactionsPage() {
   // Bulk delete states
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+
+  // Pro Upgrade states
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [upgradeFeatureName, setUpgradeFeatureName] = useState("");
+  const [upgradeDescription, setUpgradeDescription] = useState("");
 
   const fetchTransactions = useCallback(async () => {
     setLoading(true);
@@ -223,6 +229,13 @@ export default function TransactionsPage() {
         const result = await response.json();
 
         if (!response.ok) {
+          if (response.status === 403 && result.error === "Limit reached") {
+            setIsAdding(false);
+            setUpgradeFeatureName("Tambah Transaksi (Batas 50/bulan)");
+            setUpgradeDescription(result.details || "Free tier dibatasi maksimal 50 transaksi per bulan.");
+            setShowUpgradeModal(true);
+            return;
+          }
           throw new Error(result.error || "Gagal menambah transaksi");
         }
 
@@ -337,6 +350,14 @@ export default function TransactionsPage() {
       const response = await fetch(`/api/export?${params}`);
 
       if (!response.ok) {
+        if (response.status === 403) {
+          const errorData = await response.json();
+          setIsExportDialogOpen(false);
+          setUpgradeFeatureName("Export Laporan");
+          setUpgradeDescription(errorData.details || "Fitur export hanya tersedia untuk pengguna Pro.");
+          setShowUpgradeModal(true);
+          return;
+        }
         const errorData = await response.json();
         throw new Error(errorData.error || "Gagal export data");
       }
@@ -953,6 +974,14 @@ export default function TransactionsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Pro Upgrade Dialog */}
+      <ProUpgradeDialog
+        open={showUpgradeModal}
+        onOpenChange={setShowUpgradeModal}
+        featureName={upgradeFeatureName}
+        description={upgradeDescription}
+      />
     </div>
   );
 }

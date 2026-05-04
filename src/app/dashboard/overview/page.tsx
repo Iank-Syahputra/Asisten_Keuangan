@@ -355,16 +355,6 @@ export default function DashboardOverview() {
             <Button
               variant="outline"
               size="sm"
-              className="border-white/10 hover:bg-white/5 gap-2"
-              onClick={handleExport}
-              disabled={loading || isExporting}
-            >
-              <Download className={`w-4 h-4 ${isExporting ? 'animate-pulse' : ''}`} />
-              <span className="hidden sm:inline">Export</span>
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
               className="border-white/10 hover:bg-white/5"
               onClick={fetchDashboardData}
               disabled={loading}

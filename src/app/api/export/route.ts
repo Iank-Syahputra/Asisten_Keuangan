@@ -35,6 +35,34 @@ export async function GET(request: NextRequest) {
       },
     });
 
+    // --- SAAS: Check Subscription Tier (Pro Required) ---
+    const { data: subscription } = await supabase
+      .from("user_subscriptions")
+      .select("tier, valid_until")
+      .eq("user_id", userId)
+      .single();
+
+    let userTier = subscription?.tier || "free";
+    
+    // Check if Pro tier is expired
+    if (userTier === "pro" && subscription?.valid_until) {
+      const validUntil = new Date(subscription.valid_until);
+      if (validUntil < new Date()) {
+        userTier = "free"; // Expired
+      }
+    }
+
+    if (userTier !== "pro") {
+      return NextResponse.json(
+        { 
+          error: "Premium Feature", 
+          details: "Export functionality is only available for Pro users. Please upgrade your plan." 
+        },
+        { status: 403 }
+      );
+    }
+    // --- END SAAS LIMITS ---
+
     // Get query params
     const searchParams = request.nextUrl.searchParams;
     const format = searchParams.get("format") || "csv"; // csv, excel, pdf

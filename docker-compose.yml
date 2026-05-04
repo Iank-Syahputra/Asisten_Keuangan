@@ -32,3 +32,22 @@ services:
       
       # App Config
       - NODE_ENV=production
+
+  akum_nginx:
+    image: nginx:1.25-alpine
+    container_name: akum_nginx
+    environment:
+      - VIRTUAL_HOST=akum.meambo.id
+      - LETSENCRYPT_HOST=akum.meambo.id
+      - VIRTUAL_PORT=3000
+    volumes:
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+    networks:
+      - proxy_network
+    depends_on:
+      - asisten-keuangan-app
+
+
+networks:
+  proxy_network:
+    external: true

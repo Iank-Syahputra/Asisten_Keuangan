@@ -41,7 +41,7 @@ services:
     environment:
       - VIRTUAL_HOST=akum.meambo.id
       - LETSENCRYPT_HOST=akum.meambo.id
-      - VIRTUAL_PORT=3004
+      - VIRTUAL_PORT=3000
     volumes:
       - ./docker/nginx/conf.d:/etc/nginx/conf.d
     networks:

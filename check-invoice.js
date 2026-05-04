@@ -1,8 +1,14 @@
+require('dotenv').config();
 const { Xendit } = require('xendit-node');
 
 // Inisialisasi Xendit Client menggunakan key dari environment variable
-// Jika tidak ada di env, Anda bisa langsung mengganti nilai string di bawah ini
-const XENDIT_SECRET_KEY = process.env.XENDIT_SECRET_KEY || 'xnd_production_xxxxxx'; 
+// Pastikan file .env berisi XENDIT_SECRET_KEY=xnd_...
+const XENDIT_SECRET_KEY = process.env.XENDIT_SECRET_KEY; 
+
+if (!XENDIT_SECRET_KEY) {
+  console.error("❌ Error: XENDIT_SECRET_KEY tidak ditemukan di file .env!");
+  process.exit(1);
+}
 
 const xenditClient = new Xendit({ secretKey: XENDIT_SECRET_KEY });
 const invoiceService = xenditClient.Invoice;

@@ -1,0 +1,39 @@
+# Ignore node_modules
+node_modules
+npm-debug.log
+yarn-error.log
+yarn.lock
+package-lock.json
+
+# Ignore build directories
+.next
+out
+build
+dist
+
+# Ignore env files (These should be provided at runtime)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Ignore git files
+.git
+.gitignore
+
+# Ignore other files
+README.md
+CLAUDE.md
+DOCUMENTATION.md
+SUPABASE_SETUP.md
+SUPABASE_CLERK_SETUP.md
+
+# Ignore IDE files
+.vscode
+.idea
+.devcontainer
+.clerk
+
+# Ignore tmp
+.gemini
